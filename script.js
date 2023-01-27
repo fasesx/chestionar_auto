@@ -13,6 +13,7 @@ const closeOverlayElement = document.querySelector('.AnswersOverlay__Close')
 const resultsOverlay = document.getElementById('results-overlay')
 const startOverButton = document.getElementById('startover-btn')
 const reminaingQuestions = document.getElementById('remaining-questions')
+const initialQuestions = document.getElementById('initial-questions')
 const timerMinutes = document.getElementById('timer-minutes')
 const timerSeconds = document.getElementById('timer-seconds')
 const testCodeInput = document.getElementById('test-code');
@@ -35,7 +36,7 @@ let currentQuestionIndex, wrongAnswers, correctAnswers, selectedAnswers, remaini
 const answersOrder = ['A', 'B', 'C']
 
 let test = {};
-let shufflledQuestions;
+let shuffledQuestions;
 
 answerButtons.forEach(button => {
     button.addEventListener('click', () => {
@@ -49,17 +50,36 @@ answerButtons.forEach(button => {
 })
 blockOverlay.addEventListener('click', closeAnswersOverlay)
 closeOverlayElement.addEventListener('click', closeAnswersOverlay)
-startButton.addEventListener('click', () => fetchTest(testCodeInput.value))
-startOverButton.addEventListener('click', beginQuiz)
+startButton.addEventListener('click', () => validateTest(testCodeInput.value))
+startOverButton.addEventListener('click', startOver)
 nextButton.addEventListener('click', checkAnswer)
 
-async function fetchTest(code) {
-    const resp = await fetch(`${API_URL}/test/code?value=${code}`);
+async function validateTest(code) {
+    const resp = await fetch(`${API_URL}/test/validate?value=${code}`);
     const testData = await resp.json()
-    if(testData) {
+    
+    if (testData) {
         test = testData;
+        await fetchQuestions(testData.question_nb);
         beginQuiz();
     }
+}
+
+async function fetchQuestions(count) {
+    const resp = await fetch(`${API_URL}/test/generate?value=${count}`)
+    shuffledQuestions = await resp.json()
+    fetch(`${API_URL}/test/right-answer/1`, {
+        method: 'PUT'
+    })
+}
+
+function startOver() {
+    testCodeInput.value = ""
+    startButton.classList.add('Button--Disabled');
+    startButton.classList.remove('Button--Confirm');
+    beginOverlay.style.display = 'flex'
+    blockOverlay.style.display = 'none'
+    resultsOverlay.style.display = 'none'
 }
 
 function nextQuestion() {
@@ -104,6 +124,7 @@ function updateInterface(showCorrectAnswer = false) {
         button.classList.remove('Answer--Selected')
     })
     selectedAnswers = ''
+    initialQuestions.innerText = shuffledQuestions.length
     reminaingQuestions.innerText = remainingQuestionsNb
     remainingQuestionsNb--
     correctAnswersElements.forEach(element => {
@@ -116,12 +137,12 @@ function beginQuiz() {
     beginOverlay.style.display = 'none'
     blockOverlay.style.display = 'none'
     resultsOverlay.style.display = 'none'
-    shuffledQuestions = questions.sort(() => Math.random() - .5)
-    shuffledQuestions.length = 5
+    // shuffledQuestions = questions.sort(() => Math.random() - .5)
+    // shuffledQuestions.length = 5
     currentQuestionIndex = 0
     wrongAnswers = 0
     correctAnswers = 0
-    remainingQuestionsNb = 5
+    remainingQuestionsNb = shuffledQuestions.length
     secondsRemaining = 0
     minutesRemaining = test.time;
     selectedAnswers = ''
@@ -146,7 +167,7 @@ function handleTimer() {
 }
 
 function showQuestion() {
-    if (currentQuestionIndex >= 5) {
+    if (currentQuestionIndex >= shuffledQuestions.length) {
         endTest()
         return
     }
