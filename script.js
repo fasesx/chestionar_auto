@@ -17,6 +17,7 @@ const initialQuestions = document.getElementById('initial-questions')
 const timerMinutes = document.getElementById('timer-minutes')
 const timerSeconds = document.getElementById('timer-seconds')
 const testCodeInput = document.getElementById('test-code');
+const invalidCodeError = document.getElementById('invalid-code');
 
 const API_URL = "http://localhost/chestionar/api/v1"
 
@@ -60,17 +61,19 @@ async function validateTest(code) {
     
     if (testData) {
         test = testData;
-        await fetchQuestions(testData.question_nb);
+        await fetchQuestions(testData.question_nb)
         beginQuiz();
+    } else {
+        invalidCodeError.classList.add('BeginOverlay__Error--Visible')
+        setTimeout(() => {
+            invalidCodeError.classList.remove('BeginOverlay__Error--Visible')
+        }, 2000)
     }
 }
 
 async function fetchQuestions(count) {
     const resp = await fetch(`${API_URL}/test/generate?value=${count}`)
     shuffledQuestions = await resp.json()
-    fetch(`${API_URL}/test/right-answer/1`, {
-        method: 'PUT'
-    })
 }
 
 function startOver() {
@@ -99,10 +102,16 @@ function selectAnswer(answer, toggle) {
 
 function checkAnswer() {
     if (shuffledQuestions[currentQuestionIndex].correctAnswer === selectedAnswers) {
+        fetch(`${API_URL}/test/right-answer/${test.id}`, {
+            method: 'PUT'
+        })
         correctAnswers++
         updateInterface()
         nextQuestion()
     } else {
+        fetch(`${API_URL}/test/wrong-answer/${test.id}`, {
+            method: 'PUT'
+        })
         wrongAnswers++
         updateInterface(true)
     }
@@ -162,7 +171,7 @@ function handleTimer() {
     timerSeconds.innerText = secondsRemaining < 10 ? `0${secondsRemaining}` : secondsRemaining
     if (minutesRemaining === 0 && secondsRemaining < 0) {
         clearInterval(intervalId)
-        endTest()
+        endTest(true)
     }
 }
 
@@ -179,13 +188,23 @@ function showQuestion() {
     imgContainer.innerHTML = ''
     if (currentQuestion.image) {
         const imgElement = document.createElement('img')
-        imgElement.src = `assets/${currentQuestion.image}.png`
+        imgElement.src = currentQuestion.image
         imgElement.alt = 'Quiz image'
         imgContainer.append(imgElement)
     }
 }
 
-function endTest() {
+function endTest(isOOT = false) {
+    if(isOOT) {
+        fetch(`${API_URL}/test/oot/${test.id}`, {
+            method: 'PUT'
+        })
+    } else {
+        fetch(`${API_URL}/test/finished/${test.id}`, {
+            method: 'PUT'
+        })
+    }
+    
     blockOverlay.style.display = 'block'
     resultsOverlay.style.display = 'flex'
     clearInterval(intervalId)

@@ -218,7 +218,18 @@ header {
     border-radius: 5px;
     text-align: center;
     font-size: 20px;
+    margin-bottom: 0.5rem;
+}
+
+.BeginOverlay__Error {
+    color: red;
     margin-bottom: 2rem;
+    opacity: 0;
+}
+
+.BeginOverlay__Error--Visible {
+    transition: opacity .2s;
+    opacity: 1;
 }
 
 .Overlay {
