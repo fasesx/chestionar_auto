@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css" />
+    <script defer type="text/javascript" src="script.js"></script>
+    <title>Chestionar auto</title>
+</head>
+<body>
+    <div id="results-overlay" class="Overlay ResultsOverlay">
+        <p class="ResultsOverlay__Text">Ai finalizat testul cu <span class="QuestionStatus--Correct">0</span> răspunsuri corecte din 5.</p>
+        <div id="startover-btn" class="Button Button--Confirm">ÎNCEPE ALT TEST</div>
+    </div>
+    <div id="block-overlay" class="BlockOverlay"></div>
+    <div id="answers-overlay" class="Overlay AnswersOverlay">
+        <div class="AnswersOverlay__Close">x</div>
+        <p class="AnswersOverlay__Text">Răspunsul corect era: <span class="AnswersOverlay__CorrectAnswers"></span></p>
+    </div>
+    <div id="begin-overlay" class="BeginOverlay">
+        <p class="BeginOverlay__Text">Introdu codul testului!</p>
+        <input class="BeginOverlay__Input" id="test-code" type="text" maxlength="8" />
+        <button id="start-btn" class="Button Button--Disabled" disabled>ÎNCEPE</button>
+    </div>
+    <header>
+        <div class="SmallHeaderCell">
+            <p>5</p>
+            <p>Întrebări inițiale</p>
+        </div>
+        <div class="BigHeaderCell">
+            <p><span id="timer-minutes">25</span>:<span id="timer-seconds">00</span></p>
+        </div>
+        <div class="SmallHeaderCell">
+            <p id="remaining-questions">5</p>
+            <p>Întrebări rămase</p>
+        </div>
+    </header>
+    <main class="Container">
+        <div class="LeftContainer">
+            <div class="QuestionDataContainer">
+                <div class="QuestionNb">
+                    <p>1/10</p>
+                </div>
+                <div class="QuestionText">
+                    <p>Care dintre cele 3 masini au prioritate in cazul expus in imaginea din dreapta?</p>
+                </div>
+            </div>
+            <div class="AnswersContainer">
+                <div class="Answer">
+                    <div data-variant="A" class="Answer__Variant">A</div>
+                    <div class="Answer__Description">Raspuns A</div>
+                </div>
+                <div class="Answer">
+                    <div data-variant="B" class="Answer__Variant">B</div>
+                    <div class="Answer__Description">Raspuns B</div>
+                </div>
+                <div class="Answer">
+                    <div data-variant="C" class="Answer__Variant">C</div>
+                    <div class="Answer__Description">Raspuns C</div>
+                </div>
+            </div>
+        </div>
+        <div class="RightContainer">
+            <div class="QuestionsStatusContainer">
+                <div class="QuestionsStatus">
+                    <p>Răspunsuri corecte:<span class="QuestionStatus--Correct">0</span></p>
+                </div>
+                <div class="QuestionsStatus">
+                    <p>Răspunsuri greșite:<span class="QuestionStatus--Wrong">0</span></p>
+                </div>
+            </div>
+            <div class="ImageContainer"></div>
+        </div>
+    </main>
+    <footer class="ActionsContainer">
+        <div id="next-btn" class="Button Button--Confirm">TRIMITE RĂSPUNSUL</div>
+    </footer>
+</body>
+</html>
